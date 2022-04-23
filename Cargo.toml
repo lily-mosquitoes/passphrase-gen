@@ -10,3 +10,4 @@ csv = "1.1"
 serde = { version = "1", features = ["derive"] }
 rand = "0.8"
 cli-table = "0.4"
+anyhow = "1"

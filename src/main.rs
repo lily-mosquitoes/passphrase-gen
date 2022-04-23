@@ -1,13 +1,8 @@
 pub mod read;
+pub mod write;
 
 use clap::{Parser, CommandFactory, ErrorKind};
 use std::path::PathBuf;
-use rand::{
-    Rng,
-    thread_rng,
-    distributions::Uniform,
-};
-use cli_table::WithTitle;
 
 /// Script for generating xkcd-style passphrases from a given word list
 #[derive(Parser)]
@@ -47,20 +42,12 @@ fn main() {
             .exit()
     };
 
-    let mut rng = thread_rng();
-    let range = Uniform::new_inclusive(1, words.len());
-    let mut words_dice = (&mut rng).sample_iter(range);
-
-    let mut chosen_list = Vec::<read::WordEntry>::new();
-    println!("Chosen words:\n");
-    for _ in 1..=args.number_of_words {
-        let index = words_dice.next().expect("Failed to get next word value (please report, this is a bug)") as u32;
-        let chosen_word = words.get(&index).expect("Index out of range for word list (please report, this is a bug)");
-        chosen_list.push(chosen_word.to_owned());
-
+    match write::table(&words, args.number_of_words) {
+        Ok(()) => (),
+        Err(error) => cmd.error(ErrorKind::Io,
+            error.to_string())
+            .exit()
     }
-
-    println!("{:}", chosen_list.with_title().display().unwrap());
 
     let min_entropy = min_entropy(words.len() as f64, args.number_of_words);
     println!("\nPassphrase entropy ≥ {:.2}", min_entropy);
