@@ -12,7 +12,7 @@ struct Cli {
     #[clap(short, long)]
     file: PathBuf,
     /// Number of words to generate (1 ≤ n ≤ 255)
-    #[clap(short, long, default_value_t = 6)]
+    #[clap(short, long, default_value_t = 4)]
     number_of_words: u8,
 }
 
